@@ -1,5 +1,7 @@
 # README
 
+API of NVC Feelings Words to query as the backend for my capstone project.
+
 This README would normally document whatever steps are necessary to get the
 application up and running.
 
