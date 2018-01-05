@@ -1,28 +1,5 @@
 require 'csv'
 
-FEELINGS_WORDS_FILE = Rails.root.join('db','seed_data','feelings_words.csv')
-puts "Loading raw media data from #{MERCHANT_FILE}"
-
-merchant_failures = []
-CSV.foreach(FEELINGS_WORDS_FILE) do |row|
-  merchant = Merchant.new
-  merchant.name = row['name']
-  merchant.username = row['username']
-  merchant.email = row['email']
-  merchant.provider = row['provider']
-  merchant.uid = row['uid']
-  puts "Created merchant: #{merchant.inspect}"
-  successful = merchant.save
-  if !successful
-    merchant_failures << merchant
-  end
-end
-
-puts "Added #{Merchant.count} merchant records"
-puts "#{merchant_failures.length} merchants failed to save"
-
-# CATEGORIES #
-
 CATEGORY_FILE = Rails.root.join('db','seed_data','categories.csv')
 puts "Loading raw media data from #{CATEGORY_FILE}"
 
@@ -39,3 +16,23 @@ end
 
 puts "Added #{Category.count} category records"
 puts "#{category_failures.length} categories failed to save"
+
+
+FEELINGS_WORDS_FILE = Rails.root.join('db','seed_data','feelings.csv')
+puts "Loading raw media data from #{FEELINGS_WORDS_FILE}"
+
+feeling_failures = []
+CSV.foreach(FEELINGS_WORDS_FILE, :headers => true) do |row|
+  feeling = Feeling.new
+  feeling.name = row['word']
+  feeling.category_id = row['category']
+  feeling.rating = row['rating']
+  puts "Created feeling: #{feeling.inspect}"
+  successful = feeling.save
+  if !successful
+    feeling_failures << feeling
+  end
+end
+
+puts "Added #{Feeling.count} new feelings"
+puts "#{feeling_failures.length} feelings failed to save"
