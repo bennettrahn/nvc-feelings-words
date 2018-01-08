@@ -4,7 +4,9 @@ class FeelingsController < ApplicationController
   def index
     if params[:query]
       feelings = Feeling.where("name like ?", "%#{params[:query]}%")
-      if feelings.length < 5
+      if feelings.length == 0
+        feelings = []
+      elsif feelings.length <= 2
         feelings = Feeling.where(category: feelings[0].category)
       end
     else
