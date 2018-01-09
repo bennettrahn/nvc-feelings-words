@@ -14,7 +14,7 @@ class CheckinsController < ApplicationController
     # end
 
     if checkin.save
-      render json: {id: checkin.id}
+      render json: checkin.as_json(only: [:id, :description, :user_id])
     else
       render json: {errors: checkin.errors.messages}, status: :bad_request
     end

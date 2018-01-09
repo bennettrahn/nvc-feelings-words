@@ -1,10 +1,12 @@
 class UsersController < ApplicationController
-  before_action :require_movie, only: [:show]
+  before_action :require_user, only: [:show]
 
   def create
     user = User.new(user_params)
     if user.save
-      render json: {id: user.id}
+      render json: user.as_json(
+        only: [:id, :username]
+      )
     else
       render json: {errors: user.errors.messages}, status: :bad_request
     end
@@ -14,7 +16,7 @@ class UsersController < ApplicationController
     render(
       status: :ok,
       json: @user.as_json(
-        only: [:id, :username, :checkins]
+        only: [:id, :username]
       )
     )
   end
@@ -25,10 +27,10 @@ class UsersController < ApplicationController
     params.permit(:username, :password)
   end
 
-  def require_movie
+  def require_user
     @user = User.find_by(username: params[:id])
     unless @user
-      render status: :not_found, json: { errors: { title: ["Not found"] } }
+      render json: { errors: { title: ["Not found"] } }
     end
   end
 end
