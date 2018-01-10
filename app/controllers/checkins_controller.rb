@@ -4,14 +4,15 @@ class CheckinsController < ApplicationController
 
   def create
     checkin = Checkin.new()
-    data = checkin_params
+    data = params
+    puts data
     checkin.user_id = data[:user_id].to_i
     checkin.description = data[:description]
-    checkin.feelings << Feeling.find(data[:feelings].to_i)
+    # checkin.feelings << Feeling.find(data[:feelings].to_i)
     # binding.pry
-    # data[:feelings].each do |feeling|
-    #   checkin.feelings << Feeling.find(feeling.to_i)
-    # end
+    data[:feelings].each do |feeling|
+      checkin.feelings << Feeling.find(feeling.to_i)
+    end
 
     if checkin.save
       render json: checkin.as_json(only: [:id, :description, :user_id])
@@ -30,11 +31,11 @@ class CheckinsController < ApplicationController
   #   )
   # end
 
-  private
-
-  def checkin_params
-    params.permit(:description, :feelings, :user_id)
-  end
+  # private
+  #
+  # def checkin_params
+  #   params.permit(:description, :feelings, :user_id)
+  # end
   #
   # def require_movie
   #   @movie = Movie.find_by(title: params[:title])

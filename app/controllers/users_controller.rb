@@ -8,7 +8,7 @@ class UsersController < ApplicationController
         only: [:id, :username]
       )
     else
-      render json: {errors: user.errors.messages}, status: :bad_request
+      render json: {errors: user.errors.messages} #, status: :bad_request
     end
   end
 
@@ -28,9 +28,19 @@ class UsersController < ApplicationController
   end
 
   def require_user
-    @user = User.find_by(username: params[:id])
-    unless @user
-      render json: { errors: { title: ["Not found"] } }
+    @user = User.find_by(username: params[:username])
+    if !@user
+      render json: {
+        errors: {
+          user: ["User does not exist"]
+        }
+      }
+    elsif @user.password != params[:password]
+      render json: {
+        errors: {
+          password: ["Incorrect password"]
+        }
+      }
     end
   end
 end
