@@ -1,6 +1,19 @@
 class CheckinsController < ApplicationController
   # before_action :require_movie, only: [:show]
 
+  def index
+    if params[:username]
+      user = User.where(username: params[:username])[0].id
+      users_checkins = Checkin.where(user_id: user)
+      # puts users_checkins
+    else
+      users_checkins = Checkin.all
+    end
+
+    render json: users_checkins.as_json(only: [:id, :description, :created_at])
+
+
+  end
 
   def create
     checkin = Checkin.new()
@@ -9,7 +22,6 @@ class CheckinsController < ApplicationController
     checkin.user_id = User.where(username: data[:username])[0].id
     checkin.description = data[:description]
     # checkin.feelings << Feeling.find(data[:feelings].to_i)
-    # binding.pry
     data[:feelings].each do |feeling|
       checkin.feelings << Feeling.find(feeling.to_i)
     end
