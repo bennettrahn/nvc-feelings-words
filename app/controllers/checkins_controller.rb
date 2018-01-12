@@ -6,7 +6,7 @@ class CheckinsController < ApplicationController
     checkin = Checkin.new()
     data = params
     puts data
-    checkin.user_id = data[:user_id].to_i
+    checkin.user_id = User.where(username: data[:username])[0].id
     checkin.description = data[:description]
     # checkin.feelings << Feeling.find(data[:feelings].to_i)
     # binding.pry
