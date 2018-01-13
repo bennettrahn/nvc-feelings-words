@@ -9,8 +9,10 @@ class CheckinsController < ApplicationController
     else
       users_checkins = Checkin.all
     end
+    # render json: post, include: ['comments'].
 
-    render json: users_checkins.as_json(only: [:id, :description, :created_at])
+    render json: users_checkins.as_json(only: [:id, :description, :created_at], include: [:feelings])
+
 
 
   end
