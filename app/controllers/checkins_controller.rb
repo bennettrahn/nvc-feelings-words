@@ -12,10 +12,45 @@ class CheckinsController < ApplicationController
     # render json: post, include: ['comments'].
 
     render json: users_checkins.as_json(only: [:id, :description, :created_at], include: [:feelings])
+  end
 
+  def categories
+    categories = {}
+    if params[:username]
+      user = User.where(username: params[:username])[0].id
+      users_checkins = Checkin.where(user_id: user)
 
+      users_checkins.each do |checkin|
+        checkin.feelings.each do |feeling|
+          if categories[feeling.category.name]
+            categories[feeling.category.name] += 1
+          else
+            categories[feeling.category.name] = 1
+          end
+        end
+      end
+    end
+
+    sorted = categories.sort_by {|k, v| -v }
+
+    render json: sorted
 
   end
+  # def index
+  #   if params[:query]
+  #     feelings = Feeling.where("name like ?", "%#{params[:query]}%")
+  #     if feelings.length == 0
+  #       feelings = []
+  #     elsif feelings.length <= 2
+  #       feelings = Feeling.where(category: feelings[0].category)
+  #     end
+  #   else
+  #     feelings = Feeling.all
+  #   end
+  #
+  #   render json: feelings.as_json(only: [:id, :name, :rating, :category])
+  #   # render status: :ok, json: data
+  # end
 
   def create
     checkin = Checkin.new()
