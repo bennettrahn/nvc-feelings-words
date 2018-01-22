@@ -3,13 +3,17 @@ class CheckinsController < ApplicationController
 
   def index
     if params[:username]
-      user = User.where(username: params[:username])[0].id
-      users_checkins = Checkin.where(user_id: user)
+      user = User.where(username: params[:username])[0]
+      users_checkins = user.checkins.where(created_at: 1.week.ago..Time.now).order(:created_at)
+
+      # binding.pry
       # puts users_checkins
     else
       users_checkins = Checkin.all
     end
     # render json: post, include: ['comments'].
+    # render json: {errors: checkin.errors.messages}, status: :bad_request
+
 
     render json: users_checkins.as_json(only: [:id, :description, :created_at], include: [:feelings])
   end
