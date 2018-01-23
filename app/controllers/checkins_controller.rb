@@ -2,10 +2,28 @@ class CheckinsController < ApplicationController
   # before_action :require_movie, only: [:show]
 
   def index
+    day_averages = {}
+    days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+
+
     if params[:username]
       user = User.where(username: params[:username])[0]
       users_checkins = user.checkins.where(created_at: 1.week.ago..Time.now).order(:created_at)
 
+      users_checkins.each do |checkin|
+        index = checkin.created_at.wday
+        feelingTotal = 0;
+        checkin.feelings.each do |feeling|
+          feelingTotal += feeling.rating.to_f
+        end
+        feelingAvg = feelingTotal / checkin.feelings.length;
+
+        if day_averages[days[index]]
+          day_averages[days[index]] = ((day_averages[days[index]] + feelingAvg) / 2)
+        else
+          day_averages[days[index]] = feelingAvg
+        end
+      end
       # binding.pry
       # puts users_checkins
     else
@@ -14,8 +32,10 @@ class CheckinsController < ApplicationController
     # render json: post, include: ['comments'].
     # render json: {errors: checkin.errors.messages}, status: :bad_request
 
-
-    render json: users_checkins.as_json(only: [:id, :description, :created_at], include: [:feelings])
+    render json: {
+      all_checkins: users_checkins.as_json(only: [:id, :description, :created_at], include: [:feelings]),
+      day_averages: day_averages.to_a
+    }
   end
 
   def categories
