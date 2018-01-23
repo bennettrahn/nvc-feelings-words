@@ -29,6 +29,8 @@ class CheckinsController < ApplicationController
     else
       users_checkins = Checkin.all
     end
+
+    users_checkins = users_checkins.reverse
     # render json: post, include: ['comments'].
     # render json: {errors: checkin.errors.messages}, status: :bad_request
 
