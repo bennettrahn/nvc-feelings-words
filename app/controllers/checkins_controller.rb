@@ -43,8 +43,8 @@ class CheckinsController < ApplicationController
   def categories
     categories = {}
     if params[:username]
-      user = User.where(username: params[:username])[0].id
-      users_checkins = Checkin.where(user_id: user)
+      user = User.where(username: params[:username])[0]
+      users_checkins = user.checkins.where(created_at: 1.week.ago..Time.now).order(:created_at)
 
       users_checkins.each do |checkin|
         checkin.feelings.each do |feeling|
@@ -55,6 +55,19 @@ class CheckinsController < ApplicationController
           end
         end
       end
+
+      total = categories.values.inject(:+)
+
+      categories.each do |category, val|
+        percent = ((val.to_f / total) * 100).to_i
+        if percent <= 5
+          categories.delete(category)
+        else
+          categories[category] = percent
+        end
+      end
+
+      categories["other"] = (100 - categories.values.inject(:+))
     end
 
     sorted = categories.sort_by {|k, v| -v }
